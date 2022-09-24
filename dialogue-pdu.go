@@ -65,6 +65,7 @@ const (
 	_
 	MmEventReportingContext
 	AnyTimeInfoHandlingContext
+	SendRoutingInfoForSM
 )
 
 // Result Value defnitions.
@@ -678,6 +679,8 @@ func (d *DialoguePDU) Context() string {
 			return "mmEventReportingContext"
 		case AnyTimeInfoHandlingContext:
 			return "anyTimeInfoHandlingContext"
+		case SendRoutingInfoForSM:
+			return "sendRoutingInfoForSM "
 		}
 	}
 

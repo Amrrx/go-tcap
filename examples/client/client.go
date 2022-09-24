@@ -8,6 +8,10 @@ import (
 	"encoding/hex"
 	"flag"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/ishidawataru/sctp"
 	"github.com/wmnsk/go-m3ua"
@@ -18,20 +22,43 @@ import (
 	"github.com/wmnsk/go-tcap"
 )
 
-func main() {
+func sendRoutingInfoForSM() []byte {
 	var (
-		addr    = flag.String("addr", "127.0.0.2:2905", "Remote IP and Port to connect to.")
+		otid    = flag.Int("otid", 0x11111111, "Originating Transaction ID in uint32.")
+		opcode  = flag.Int("opcode", 45, "Operation Code in int.")
+		payload = flag.String("payload", "800791180758002431810100820791180758188106", "Hex representation of the payload")
+	)
+	flag.Parse()
+	p, err := hex.DecodeString(*payload)
+	if err != nil {
+		log.Fatal(err)
+	}
+	tcapBytes, err := tcap.NewBeginInvokeWithDialogue(
+		uint32(*otid),             // OTID
+		tcap.DialogueAsID,         // DialogueType
+		tcap.SendRoutingInfoForSM, // ACN
+		3,                         // ACN Version
+		0,                         // Invoke Id
+		*opcode,                   // OpCode
+		p,                         // Payload
+	).MarshalBinary()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return tcapBytes
+}
+
+func sendCancelLocation() []byte {
+	var (
 		otid    = flag.Int("otid", 0x11111111, "Originating Transaction ID in uint32.")
 		opcode  = flag.Int("opcode", 3, "Operation Code in int.")
 		payload = flag.String("payload", "040800010121436587f9", "Hex representation of the payload")
 	)
 	flag.Parse()
-
 	p, err := hex.DecodeString(*payload)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	tcapBytes, err := tcap.NewBeginInvokeWithDialogue(
 		uint32(*otid),                    // OTID
 		tcap.DialogueAsID,                // DialogueType
@@ -44,6 +71,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	return tcapBytes
+}
+
+func main() {
+	var (
+		addr = flag.String("addr", "127.0.0.1:2905", "Remote IP and Port to connect to.")
+	)
+
+	targetMessage := sendRoutingInfoForSM()
 
 	// create *Config to be used in M3UA connection
 	m3config := m3ua.NewConfig(
@@ -53,7 +89,7 @@ func main() {
 		0,                       // NetworkIndicator
 		0,                       // MessagePriority
 		1,                       // SignalingLinkSelection
-	).EnableHeartbeat(0, 0)
+	).EnableHeartbeat(5*time.Second, 100*time.Second)
 
 	// setup SCTP peer on the specified IPs and Port.
 	raddr, err := sctp.ResolveSCTPAddr("sctp", *addr)
@@ -92,7 +128,7 @@ func main() {
 			0x01, 0x02, 0x04, // NP, ES, NAI
 			cgPA, // GlobalTitleInformation
 		),
-		tcapBytes,
+		targetMessage,
 	).MarshalBinary()
 	if err != nil {
 		log.Fatal(err)
@@ -102,4 +138,24 @@ func main() {
 	if _, err := m3conn.Write(udt); err != nil {
 		log.Fatal(err)
 	}
+
+
+	// A new ticker for the heartbeats
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT)
+	for {
+		ticker := time.NewTicker(5 * time.Second)
+		select {
+		case sig := <-sigCh:
+			log.Printf("Got signal: %v, exitting...", sig)
+			ticker.Stop()
+			os.Exit(1)
+		case <-ticker.C:
+			log.Println("Beat....")
+			// if _, err := m3conn.Write(udt); err != nil {
+			// 	log.Fatal(err)
+			// }
+		}
+	}
+	
 }
