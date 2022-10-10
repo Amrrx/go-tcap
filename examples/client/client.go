@@ -19,14 +19,18 @@ import (
 	"github.com/wmnsk/go-sccp"
 	"github.com/wmnsk/go-sccp/params"
 	"github.com/wmnsk/go-sccp/utils"
-	"github.com/wmnsk/go-tcap"
+	"github.com/Amrrx/go-tcap"
 )
-
+// "800791180758002431810100820791180758188106"
+// 800712345678912534810100820712345678912534 -> Modified
 func sendRoutingInfoForSM() []byte {
 	var (
 		otid    = flag.Int("otid", 0x11111111, "Originating Transaction ID in uint32.")
 		opcode  = flag.Int("opcode", 45, "Operation Code in int.")
-		payload = flag.String("payload", "800791180758002431810100820791180758188106", "Hex representation of the payload")
+		// Tag 80 = IMSDIN , 07 Size of message, 1 - 888 IMSDIN
+		// Tag 81 = sm-RP-PRI, 01, FF = True / 00 = False
+		// Tag 82 = Service Centre Address, 07 Size of message, 1 - 999 IMSDIN
+		payload = flag.String("payload", "8007123456789128888101FF820712345678912999", "Hex representation of the payload")
 	)
 	flag.Parse()
 	p, err := hex.DecodeString(*payload)
@@ -38,7 +42,7 @@ func sendRoutingInfoForSM() []byte {
 		tcap.DialogueAsID,         // DialogueType
 		tcap.SendRoutingInfoForSM, // ACN
 		3,                         // ACN Version
-		0,                         // Invoke Id
+		113,                       // Invoke Id
 		*opcode,                   // OpCode
 		p,                         // Payload
 	).MarshalBinary()
@@ -59,6 +63,7 @@ func sendCancelLocation() []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
+	//tcap.Parse()
 	tcapBytes, err := tcap.NewBeginInvokeWithDialogue(
 		uint32(*otid),                    // OTID
 		tcap.DialogueAsID,                // DialogueType
@@ -73,6 +78,8 @@ func sendCancelLocation() []byte {
 	}
 	return tcapBytes
 }
+
+
 
 func main() {
 	var (
@@ -105,26 +112,26 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cdPA, err := utils.StrToSwappedBytes("1234567890123456", "0")
+	cdPA, err := utils.StrToSwappedBytes("817085004213", "0")
 	if err != nil {
 		log.Fatal(err)
 	}
-	cgPA, err := utils.StrToSwappedBytes("9876543210", "0")
+	cgPA, err := utils.StrToSwappedBytes("817085811860", "0")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// create UDT message with CdPA, CgPA and payload
 	udt, err := sccp.NewUDT(
-		1,    // Protocol Class
+		0,    // Protocol Class
 		true, // Message handling
 		params.NewPartyAddress( // CalledPartyAddress: 1234567890123456
 			0x12, 0, 6, 0x00, // Indicator, SPC, SSN, TT
-			0x01, 0x01, 0x04, // NP, ES, NAI
+			0x01, 0x02, 0x04, // NP, ES, NAI
 			cdPA, // GlobalTitleInformation
 		),
 		params.NewPartyAddress( // CallingPartyAddress: 9876543210
-			0x12, 0, 7, 0x01, // Indicator, SPC, SSN, TT
+			0x12, 0, 8, 0x00, // Indicator, SPC, SSN, TT
 			0x01, 0x02, 0x04, // NP, ES, NAI
 			cgPA, // GlobalTitleInformation
 		),

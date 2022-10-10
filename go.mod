@@ -1,4 +1,4 @@
-module github.com/wmnsk/go-tcap
+module github.com/Amrrx/go-tcap
 
 go 1.15
 
