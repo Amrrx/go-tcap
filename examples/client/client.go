@@ -14,11 +14,11 @@ import (
 	"time"
 
 	"github.com/ishidawataru/sctp"
-	"github.com/wmnsk/go-m3ua"
-	m3params "github.com/wmnsk/go-m3ua/messages/params"
-	"github.com/wmnsk/go-sccp"
-	"github.com/wmnsk/go-sccp/params"
-	"github.com/wmnsk/go-sccp/utils"
+	"github.com/Amrrx/go-m3ua"
+	m3params "github.com/Amrrx/go-m3ua/messages/params"
+	"github.com/Amrrx/go-sccp"
+	"github.com/Amrrx/go-sccp/params"
+	"github.com/Amrrx/go-sccp/utils"
 	"github.com/Amrrx/go-tcap"
 )
 // "800791180758002431810100820791180758188106"
