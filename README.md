@@ -2,9 +2,9 @@
 
 Simple TCAP implementation in Golang
 
-[![CircleCI](https://circleci.com/gh/wmnsk/go-tcap.svg?style=shield)](https://circleci.com/gh/wmnsk/go-tcap)
-[![GoDoc](https://godoc.org/github.com/wmnsk/go-tcap?status.svg)](https://godoc.org/github.com/wmnsk/go-tcap)
-[![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/wmnsk/go-tcap/blob/master/LICENSE)
+[![CircleCI](https://circleci.com/gh/Amrrx/go-tcap.svg?style=shield)](https://circleci.com/gh/Amrrx/go-tcap)
+[![GoDoc](https://godoc.org/github.com/Amrrx/go-tcap?status.svg)](https://godoc.org/github.com/Amrrx/go-tcap)
+[![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Amrrx/go-tcap/blob/master/LICENSE)
 
 Package tcap provides simple and painless handling of TCAP(Transaction Capabilities Application Part) in SS7/SIGTRAN protocol stack, implemented in the Go Programming Language.
 
@@ -77,7 +77,7 @@ Usage of client:
         Hex representation of the payload (default "040800010121436587f9")
 ```
 
-_If you are looking for a server that just can accept a SCTP/M3UA connection to receive a TCAP packet, [server example in go-m3ua project](https://github.com/wmnsk/go-m3ua/blob/master/examples/server/m3ua-server.go) would be a nice choice for you._
+_If you are looking for a server that just can accept a SCTP/M3UA connection to receive a TCAP packet, [server example in go-m3ua project](https://github.com/Amrrx/go-m3ua/blob/master/examples/server/m3ua-server.go) would be a nice choice for you._
 
 ## Supported Features
 
@@ -139,10 +139,10 @@ _If you are looking for a server that just can accept a SCTP/M3UA connection to 
 
 ## Author(s)
 
-Yoshiyuki Kurauchi ([Website](https://wmnsk.com/) / [Twitter](https://twitter.com/wmnskdmms))
+Yoshiyuki Kurauchi ([Website](https://Amrrx.com/) / [Twitter](https://twitter.com/Amrrxdmms))
 
 I'm always open to welcome co-authors! Please feel free to talk to me.
 
 ## LICENSE
 
-[MIT](https://github.com/wmnsk/go-tcap/blob/master/LICENSE)
+[MIT](https://github.com/Amrrx/go-tcap/blob/master/LICENSE)
